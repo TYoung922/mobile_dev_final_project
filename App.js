@@ -1,20 +1,99 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet } from "react-native";
+import CategoriesScreen from "./screens/CategoriesScreen";
+import AddRecipeScreen from "./screens/AddRecipeScreen";
+import ShoppingListScreen from "./screens/ShoppingListScreen";
+import StaredScreen from "./screens/StaredScreen";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { GlobalStyles } from "./constants/styles";
+
+const Stack = createNativeStackNavigator();
+const BottomTabs = createBottomTabNavigator();
+
+function RecipeOverview() {
+  return (
+    <BottomTabs.Navigator
+      screenOptions={({ navigation }) => ({
+        headerStyle: { backgroundColor: GlobalStyles.colors.darkOrange },
+        headerTintColor: GlobalStyles.colors.lightGreen,
+        tabBarStyle: {
+          backgroundColor: GlobalStyles.colors.darkOrange,
+          height: 60,
+          paddingTop: 5,
+        },
+        tabBarActiveTintColor: GlobalStyles.colors.darkGreen,
+        tabBarInactiveTintColor: GlobalStyles.colors.lightGreen,
+      })}
+    >
+      <BottomTabs.Screen
+        name="Categories"
+        component={CategoriesScreen}
+        options={{
+          title: "Recipes",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="apps" size={size} color={color} />
+          ),
+        }}
+      />
+      <BottomTabs.Screen
+        name="AddRecipe"
+        component={AddRecipeScreen}
+        options={{
+          title: "Add Recipe",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="add" size={size} color={color} />
+          ),
+        }}
+      />
+      <BottomTabs.Screen
+        name="StaredRecipes"
+        component={StaredScreen}
+        options={{
+          title: "Stared Recipes",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="star" size={size} color={color} />
+          ),
+        }}
+      />
+      <BottomTabs.Screen
+        name="ShoppingList"
+        component={ShoppingListScreen}
+        options={{
+          title: "Shopping List",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="list" size={size} color={color} />
+          ),
+        }}
+      />
+    </BottomTabs.Navigator>
+  );
+}
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+    <>
       <StatusBar style="auto" />
-    </View>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="RecipeOverview"
+            component={RecipeOverview}
+            options={{ headerShown: false }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
