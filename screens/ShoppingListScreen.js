@@ -3,8 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 function ShoppingListScreen() {
   return (
     <View style={styles.rootContainer}>
-      <Text style={styles.title}>Welcome!</Text>
-      <Text>You have reaced the shopping list screen!</Text>
+      <Text style={styles.title}>There is nothing on your shopping list</Text>
     </View>
   );
 }

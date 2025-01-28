@@ -3,8 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 function StaredScreen() {
   return (
     <View style={styles.rootContainer}>
-      <Text style={styles.title}>Welcome!</Text>
-      <Text>You have reached the stared screen!</Text>
+      <Text style={styles.title}>You have no stared Recipes</Text>
     </View>
   );
 }

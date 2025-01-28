@@ -37,8 +37,8 @@ class Category {
 // ];
 
 export const CATEGORIES = [
-  new Category("c1", "Italian", GlobalStyles.colors.darkGreen),
-  new Category("c2", "Quick & Easy", GlobalStyles.colors.darkOrange),
+  new Category("c1", "Quick & Easy", GlobalStyles.colors.darkGreen),
+  new Category("c2", "Italian", GlobalStyles.colors.darkOrange),
   new Category("c3", "Hamburgers", GlobalStyles.colors.darkOrange),
   new Category("c4", "German", GlobalStyles.colors.darkGreen),
   new Category("c5", "Light & Lovely", GlobalStyles.colors.darkGreen),
