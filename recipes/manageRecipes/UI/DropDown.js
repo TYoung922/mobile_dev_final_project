@@ -3,8 +3,8 @@ import { View, StyleSheet, Text } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 import { CATEGORIES, GlobalStyles } from "../../../constants/styles";
 
-const DropDown = ({ style, onValueChange }) => {
-  const [selectedValue, setSelectedValue] = useState(null);
+const DropDown = ({ style, onValueChange, displayValue }) => {
+  const [selectedValue, setSelectedValue] = useState(displayValue);
 
   const handleValueChange = (value) => {
     setSelectedValue(value);

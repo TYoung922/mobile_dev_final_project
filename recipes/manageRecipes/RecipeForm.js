@@ -1,44 +1,47 @@
-import { StyleSheet, View, Text, TextInput, ScrollView } from "react-native";
-import { useState } from "react";
-import { GlobalStyles } from "../../constants/styles";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  ScrollView,
+  Alert,
+  Switch,
+} from "react-native";
+import { useContext, useEffect, useState } from "react";
+import { GlobalStyles, CATEGORIES } from "../../constants/styles";
 import Button from "./UI/Button";
-import Input from "./UI/Input";
+// import Input from "./UI/Input";
 import IconButton from "./UI/IconButton";
-import DropDown from "./UI/DropDown";
+// import DropDown from "./UI/DropDown";
 import { CustomCheckBox } from "./UI/CheckBox";
+import { RecipeContext } from "../../store/recipe-context";
+import { storeRecipe, updateRecipe } from "../../util/http";
 
-function RecipeForm({ defaultValues, submitType }) {
+import RNPickerSelect from "react-native-picker-select";
+
+function RecipeForm() {
+  const recipeCtx = useContext(RecipeContext);
   //Form data
-  const [inputs, setInputs] = useState({
-    recipeName: {
-      value: defaultValues ? defaultValues.name.toString() : "",
-      isValid: true,
-    },
-    genre: {
-      value: defaultValues ? defaultValues.genre.toString() : "",
-      isValid: true,
-    },
-    isQuick: {
-      value: defaultValues ? defaultValues.isQuick : false,
-      isValid: true,
-    },
-    ingredientList: {
-      value: defaultValues ? defaultValues.ingredientList : [],
-      isValid: true,
-    },
-    instructionList: {
-      value: defaultValues ? defaultValues.instructionList : [],
-      isValid: true,
-    },
+  const [recipeData, setRecipeData] = useState({
+    name: "",
+    genre: "",
+    isQuick: false,
+    duration: "",
+    ingredientList: [],
+    instructionList: [],
   });
 
-  function setDefaultValues(defaultValues) {}
+  //   function setDefaultValues(defaultValues) {}
 
   //Name
   const [recipeName, setRecipeName] = useState();
 
   //drop down menu
-  const [genre, setGenre] = useState();
+  const categoryItems = CATEGORIES.slice(1).map((category) => ({
+    label: category.title,
+    value: category.id,
+  }));
+  const [genre, setGenre] = useState(null);
   const genreHandler = (value) => {
     setGenre(value);
     // console.log("isQuickSelect genre: ", value);
@@ -55,16 +58,26 @@ function RecipeForm({ defaultValues, submitType }) {
   const [ingredient, setIngreditent] = useState();
 
   function AddIngredientHandler() {
+    // if (ingredient) {
+    //   setIngredientList((prevIngredients) => [
+    //     ...prevIngredients,
+    //     { id: Math.random().toString(), name: ingredient },
+    //   ]);
+    //   setIngreditent("");
+    // }
     if (ingredient) {
-      setIngredientList((prevIngredients) => [
-        ...prevIngredients,
-        { id: Math.random().toString(), name: ingredient },
-      ]);
+      setIngredientList((prevIngredients) => [...prevIngredients, ingredient]);
       setIngreditent("");
     }
   }
-  function deleteIngredientHandler(id) {
-    const updatedList = ingredientList.filter((item) => item.id !== id);
+  //   function deleteIngredientHandler(id) {
+  //     const updatedList = ingredientList.filter((item) => item.id !== id);
+  //     setIngredientList(updatedList);
+  //   }
+  function deleteIngredientHandler(ingredientToRemove) {
+    const updatedList = ingredientList.filter(
+      (item) => item !== ingredientToRemove
+    );
     setIngredientList(updatedList);
   }
 
@@ -72,21 +85,108 @@ function RecipeForm({ defaultValues, submitType }) {
   const [instructionList, setInstructionList] = useState([]);
   const [instruction, setInstruction] = useState();
   function AddStep() {
+    // if (instruction) {
+    //   setInstructionList((prevInstructions) => [
+    //     ...prevInstructions,
+    //     // { id: prevInstructions.length + 1, name: instruction },
+    //     { id: Math.random().toString(), name: instruction },
+    //   ]);
+    //   setInstruction("");
+    // }
     if (instruction) {
-      setInstructionList((prevInstructions) => [
-        ...prevInstructions,
-        // { id: prevInstructions.length + 1, name: instruction },
-        { id: Math.random().toString(), name: instruction },
+      setInstructionList((previnstructions) => [
+        ...previnstructions,
+        instruction,
       ]);
       setInstruction("");
     }
   }
-  function deleteStepHandler(id) {
-    const updatedList = instructionList.filter((item) => item.id !== id);
+  //   function deleteStepHandler(id) {
+  //     const updatedList = instructionList.filter((item) => item.id !== id);
+  //     setInstructionList(updatedList);
+  //   }
+  function deleteStepHandler(stepToRemove) {
+    const updatedList = instructionList.filter((item) => item !== stepToRemove);
     setInstructionList(updatedList);
   }
 
-  function AddHandler() {}
+  const handleAlert = (name) => {
+    Alert.alert("Creation Success", `Your ${name} recipe has been added`, [
+      {
+        text: "Ok",
+      },
+    ]);
+  };
+
+  const AddHandler = async () => {
+    let missingFields = [];
+    if (
+      !recipeName ||
+      !genre ||
+      !duration ||
+      ingredientList.length === 0 ||
+      instructionList.length === 0
+    ) {
+      if (!recipeName) {
+        missingFields.push("Recipe Name");
+      }
+      if (!genre) {
+        missingFields.push("Cuisine Type");
+      }
+      if (!duration) {
+        missingFields.push("Duration");
+      }
+      if (ingredientList.length === 0) {
+        missingFields.push(
+          "Ingredients (make sure to click the add ingredient button)"
+        );
+      }
+      if (instructionList.length === 0) {
+        missingFields.push(
+          "Cooking Steps (make sure to click the add step button)"
+        );
+      }
+
+      const listOfMissing = missingFields.map((item) => `• ${item}`).join("\n");
+
+      Alert.alert(
+        "Missing Information",
+        `Make sure to fill out all fields.\nYou are missing:\n\n${listOfMissing}\n\nPlease fill in all missing fileds.`,
+        [{ text: "OK" }]
+      );
+      return;
+    }
+    try {
+      const updatedData = {
+        name: recipeName,
+        genre: genre,
+        isQuick: isQuickSelect,
+        isHours: isActive,
+        duration: duration,
+        ingredientList: ingredientList,
+        instructionList: instructionList,
+      };
+
+      const id = await storeRecipe(updatedData);
+
+      const newRecipe = { ...updateRecipe, id };
+
+      recipeCtx.addRecipe(newRecipe);
+
+      handleAlert(updatedData.name);
+
+      clearHandler();
+    } catch (error) {
+      console.error("Error adding recipe: ", error);
+    }
+  };
+
+  //   useEffect(() => {
+  //     if (recipeData.name) {
+  //       //do stuff
+  //     }
+
+  //     });
 
   function clearHandler() {
     setGenre(null);
@@ -97,7 +197,15 @@ function RecipeForm({ defaultValues, submitType }) {
     setRecipeName("");
     setisQuickSelect(false);
     setDuration("");
+    setIsActive(false);
   }
+
+  //switch
+  const [isActive, setIsActive] = useState(false);
+  // function toggleSwitch() {}
+  const toggleSwitch = () => {
+    setIsActive((previousState) => (previousState = !previousState));
+  };
 
   return (
     <View style={styles.container}>
@@ -111,19 +219,68 @@ function RecipeForm({ defaultValues, submitType }) {
             value={recipeName}
           />
         </View>
-        <Text style={styles.inputTitles}>Cuisine type</Text>
+        <Text style={styles.inputTitles}>Cuisine Type</Text>
         <View style={styles.dropdownContainer}>
-          <DropDown style={styles.dropdown} onValueChange={genreHandler} />
+          {/* <DropDown
+            style={styles.dropdown}
+            onValueChange={genreHandler}
+            displayValue={genre}
+          /> */}
+          <RNPickerSelect
+            onValueChange={genreHandler}
+            value={genre}
+            items={categoryItems}
+            // style={styles.dropdown}
+            style={{
+              inputAndroid: {
+                ...styles.dropdown,
+                // ...style,
+                borderRadius: 6,
+              },
+              inputIOS: {
+                ...styles.dropdown,
+                // ...style,
+              },
+              iconContainer: {
+                top: 10,
+              },
+              container: {
+                borderRadius: 6,
+                overFlow: "hidden",
+              },
+            }}
+            placeholder={{
+              label: "Select a Category...",
+              value: null,
+              color: GlobalStyles.colors.darkGreen,
+            }}
+          />
         </View>
         <View style={styles.smallItemsContainer}>
           {/* checkbox */}
           <CustomCheckBox
             isChecked={isQuickSelect}
             onPress={() => setisQuickSelect(!isQuickSelect)}
-            text="Quick & Easy"
+            text="Check if recipe is Quick & Easy"
+            textStyles={styles.checkBoxText}
           />
           <View style={styles.timeContainer}>
-            <Text style={styles.timeText}>Time in hours</Text>
+            <Text style={styles.timeText}>Duration in</Text>
+            {!isActive && <Text style={styles.timeText}>minutes</Text>}
+            {isActive && <Text style={styles.timeText}>hours</Text>}
+            <Switch
+              trackColor={{
+                false: GlobalStyles.colors.gray100,
+                true: GlobalStyles.colors.gray100,
+              }}
+              thumbColor={
+                isActive
+                  ? GlobalStyles.colors.darkGreen
+                  : GlobalStyles.colors.darkOrange
+              }
+              onValueChange={toggleSwitch}
+              value={isActive}
+            />
             <TextInput
               style={styles.numbInputStyle}
               keyboardType="numeric"
@@ -149,30 +306,14 @@ function RecipeForm({ defaultValues, submitType }) {
           </Button>
         </View>
         <View style={styles.ingredientsContainer}>
-          {/* <FlatList
-            data={ingredientList}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <View style={styles.listItemContainer}>
-                <Text style={styles.listText}>{item.name}</Text>
-                <IconButton
-                  icon="close-circle"
-                  color={GlobalStyles.colors.error500}
-                  size={25}
-                  onPress={() => deleteIngredientHandler(item.id)}
-                />
-              </View>
-            )}
-            style={styles.list}
-          /> */}
-          {ingredientList.map((item) => (
-            <View style={styles.listIngredientsContainer} key={item.id}>
-              <Text style={styles.listText}>{item.name}</Text>
+          {ingredientList.map((item, index) => (
+            <View style={styles.listIngredientsContainer} key={index}>
+              <Text style={styles.listText}>{item}</Text>
               <IconButton
                 icon="close-circle"
                 color={GlobalStyles.colors.error500}
                 size={25}
-                onPress={() => deleteIngredientHandler(item.id)}
+                onPress={() => deleteIngredientHandler(item)}
               />
             </View>
           ))}
@@ -193,28 +334,10 @@ function RecipeForm({ defaultValues, submitType }) {
           </Button>
         </View>
         <View style={styles.ingredientsContainer}>
-          {/* <FlatList
-            data={instructionList}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <View style={styles.listItemContainer}>
-                <Text style={styles.listText}>
-                  {instructionList.indexOf(item) + 1}. {item.name}{" "}
-                </Text>
-                <IconButton
-                  icon="close-circle"
-                  color={GlobalStyles.colors.error500}
-                  size={25}
-                  onPress={() => deleteStepHandler(item.id)}
-                />
-              </View>
-            )}
-            style={styles.list}
-          /> */}
           {instructionList.map((item, index) => (
-            <View style={styles.listStepsContainer} key={item.id}>
+            <View style={styles.listStepsContainer} key={index}>
               <Text style={styles.listText}>
-                {index + 1}. {item.name}
+                {index + 1}. {item}
               </Text>
               <IconButton
                 icon="close-circle"
@@ -328,7 +451,7 @@ const styles = StyleSheet.create({
     padding: 6,
   },
   smallItemsContainer: {
-    flexDirection: "row",
+    // flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
     marginBottom: 6,
@@ -346,9 +469,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    paddingTop: 8,
   },
   timeText: {
     color: GlobalStyles.colors.darkOrange,
     marginRight: 10,
+  },
+  checkBoxText: {
+    color: GlobalStyles.colors.darkOrange,
   },
 });

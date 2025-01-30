@@ -2,7 +2,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { GlobalStyles } from "../../../constants/styles";
 // import { MEALS } from "../data/dummy-data";
 
-export const CustomCheckBox = ({ isChecked, onPress, text }) => {
+export const CustomCheckBox = ({ isChecked, onPress, text, textStyles }) => {
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -28,7 +28,7 @@ export const CustomCheckBox = ({ isChecked, onPress, text }) => {
           marginRight: 10,
           marginTop: 10,
           backgroundColor: isChecked
-            ? GlobalStyles.colors.darkGreen
+            ? GlobalStyles.colors.darkOrange
             : GlobalStyles.colors.lightGreen,
         }}
       >
@@ -36,7 +36,7 @@ export const CustomCheckBox = ({ isChecked, onPress, text }) => {
           <Text style={{ color: GlobalStyles.colors.lightGreen }}>✔</Text>
         )}
       </View>
-      <Text style={{ color: GlobalStyles.colors.darkOrange }}>{text}</Text>
+      <Text style={textStyles}>{text}</Text>
       {/* </View> */}
     </TouchableOpacity>
   );

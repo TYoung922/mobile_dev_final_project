@@ -7,18 +7,23 @@ import CategoriesScreen from "./screens/CategoriesScreen";
 import AddRecipeScreen from "./screens/AddRecipeScreen";
 import ShoppingListScreen from "./screens/ShoppingListScreen";
 import StaredScreen from "./screens/StaredScreen";
+import RecipeOverviewScreen from "./screens/RecipeOverviewScreen";
+import RecipeDetailsScreen from "./screens/RecipeDetailsScreen";
+
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { GlobalStyles } from "./constants/styles";
+import RecipeContextProvider from "./store/recipe-context";
 
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
 
-function RecipeOverview() {
+function TabsScreens() {
   return (
     <BottomTabs.Navigator
       screenOptions={({ navigation }) => ({
         headerStyle: { backgroundColor: GlobalStyles.colors.darkOrange },
         headerTintColor: GlobalStyles.colors.lightGreen,
+        contentStyle: { backgroundColor: GlobalStyles.colors.lightGreen },
         tabBarStyle: {
           backgroundColor: GlobalStyles.colors.darkOrange,
           height: 60,
@@ -76,24 +81,37 @@ export default function App() {
   return (
     <>
       <StatusBar style="auto" />
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen
-            name="RecipeOverview"
-            component={RecipeOverview}
-            options={{ headerShown: false }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <RecipeContextProvider>
+        <NavigationContainer>
+          <Stack.Navigator
+            screenOptions={{
+              headerStyle: { backgroundColor: GlobalStyles.colors.darkOrange },
+              contentStyle: { backgroundColor: GlobalStyles.colors.lightGreen },
+              headerTintColor: GlobalStyles.colors.lightGreen,
+            }}
+          >
+            <Stack.Screen
+              name="TabsScreens"
+              component={TabsScreens}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="RecipeOverview"
+              component={RecipeOverviewScreen}
+            />
+            <Stack.Screen
+              name="RecipeDetails"
+              component={RecipeDetailsScreen}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </RecipeContextProvider>
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+  screenStyles: {
+    backgroundColor: GlobalStyles.colors.lightGreen,
   },
 });

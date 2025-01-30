@@ -3,6 +3,7 @@ import { createContext, useReducer } from "react";
 export const RecipeContext = createContext({
   recipe: [],
   addRecipe: ({
+    id,
     recipeName,
     genre,
     isQuick,
@@ -47,8 +48,11 @@ function RecipeContextProvider({ children }) {
     dispatch({ type: "ADD", payload: recipeData });
   }
 
+  // function setRecipe(id, recipes) {
+  //   dispatch({ type: "SET", payload: { id: id, data: recipes } });
+  // }
   function setRecipe(recipes) {
-    dispatch({ type: "SET", payload: { id: id, data: recipes } });
+    dispatch({ type: "SET", payload: recipes });
   }
 
   function updateRecipe(id, recipeData) {

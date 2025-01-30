@@ -1,6 +1,9 @@
 import { StyleSheet, FlatList, View } from "react-native";
 import { CATEGORIES, GlobalStyles } from "../constants/styles";
 import CatGridTile from "../recipes/components/CatGridTile";
+import { fetchRecipe } from "../util/http";
+import { useContext, useEffect } from "react";
+import { RecipeContext } from "../store/recipe-context";
 
 // function CategoriesScreen() {
 //   return (
@@ -12,6 +15,24 @@ import CatGridTile from "../recipes/components/CatGridTile";
 // }
 
 function CategoriesScreen({ navigation }) {
+  const recipeCtx = useContext(RecipeContext);
+
+  useEffect(() => {
+    async function getRecipes() {
+      // setIsFetching(true)
+      try {
+        const recipes = await fetchRecipe();
+        // console.log("Fetched recipes: ", recipes);
+        recipeCtx.setRecipe(recipes);
+      } catch (error) {
+        console.error(error);
+      }
+      // setIsFetching(false)
+    }
+
+    getRecipes();
+  }, []);
+
   function renderCategories(catData) {
     function pressHandler() {
       navigation.navigate("RecipeOverview", { catId: catData.item.id });
@@ -44,6 +65,6 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: GlobalStyles.colors.lightGreen,
-    // color: "#82b990" // 638C6D
+    // color: "#ff9a5f" // 638C6D
   },
 });

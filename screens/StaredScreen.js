@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
+import { GlobalStyles } from "../constants/styles";
 
 function StaredScreen() {
   return (
@@ -16,6 +17,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 32,
+    backgroundColor: GlobalStyles.colors.lightGreen,
   },
   title: {
     fontSize: 20,
