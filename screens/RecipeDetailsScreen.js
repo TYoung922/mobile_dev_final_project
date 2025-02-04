@@ -1,10 +1,13 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { GlobalStyles } from "../constants/styles";
-import { useLayoutEffect, useState } from "react";
+import { useContext, useLayoutEffect, useState } from "react";
 import { CustomCheckBox } from "../recipes/manageRecipes/UI/CheckBox";
 import IconButton from "../recipes/manageRecipes/UI/IconButton";
 import { useDispatch, useSelector } from "react-redux";
 import { addFavorite, removeFavorite } from "../store/redux/favorites";
+import { addShopping, removeShopping } from "../store/redux/shoping";
+import { storeFavorite, storeShopping } from "../util/http";
+import { AuthContext } from "../store/auth-context";
 
 function RecipeDetailsScreen({ route, navigation }) {
   //Get recipe info
@@ -17,22 +20,62 @@ function RecipeDetailsScreen({ route, navigation }) {
   const ingredientData = recipe.ingredientList;
   const stepData = recipe.instructionList;
   const mealId = recipe.id;
-  //   console.log(mealId);
+  // console.log("this meal id is: ", mealId);
+
+  //Screen Title
+  const recipeTitle = recipe.name;
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: "Recipe Info",
+      headerTitleStyle: {
+        fontSize: 30,
+      },
+    });
+  });
 
   //Favorites;
-  //   const favoriteMealIds = useSelector((state) => state.favoriteMeals.ids);
+  const favoriteMealIds = useSelector(
+    (state) => state.favoriteMeals?.ids || []
+  );
+  // console.log(favoriteMealIds);
 
-  //   const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-  //   const mealIsFavorite = favoriteMealIds.includes(mealId);
+  const mealIsFavorite = favoriteMealIds.includes(mealId);
+  // console.log(mealIsFavorite);
 
-  //   function changeFavoriteHandler() {
-  //     if (mealIsFavorite) {
-  //       dispatch(removeFavorite({ id: mealId }));
-  //     } else {
-  //       dispatch(addFavorite({ id: mealId }));
-  //     }
-  //   }
+  const { userId } = useContext(AuthContext);
+  // console.log("user id: ", userId);
+
+  function changeFavoriteHandler() {
+    let updatedFavorites;
+    if (mealIsFavorite) {
+      updatedFavorites = favoriteMealIds.filter((id) => id !== mealId);
+      dispatch(removeFavorite(mealId));
+    } else {
+      updatedFavorites = [...favoriteMealIds, mealId];
+      dispatch(addFavorite(mealId));
+    }
+
+    storeFavorite(updatedFavorites, userId);
+  }
+
+  //Shopping List
+  const shopingListIds = useSelector((state) => state.shoppingList.ids);
+
+  const mealOnShoppingList = shopingListIds.includes(mealId);
+
+  function changeShoppingHandler() {
+    let updatedShopping;
+    if (mealOnShoppingList) {
+      updatedShopping = shopingListIds.filter((id) => id !== mealId);
+      dispatch(removeShopping(mealId));
+    } else {
+      updatedShopping = [...favoriteMealIds, mealId];
+      dispatch(addShopping(mealId));
+    }
+    storeShopping(updatedShopping, userId);
+  }
 
   // checkbox
   const [isSelected, setIsSelected] = useState(false);
@@ -53,30 +96,47 @@ function RecipeDetailsScreen({ route, navigation }) {
     }));
   };
 
-  //   useLayoutEffect(() => {
-  //     navigation.setOptions({
-  //       headerRight: () => {
-  //         return (
-  //           <View>
-  //             <View>
-  //               <IconButton
-  //                 icon={mealIsFavorite ? "star" : "star-outline"}
-  //                 color="white"
-  //                 onPress={changeFavoriteHandler}
-  //               />
-  //             </View>
-  //           </View>
-  //         );
-  //       },
-  //     });
-  //   });
+  //main menu button
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => {
+        return (
+          <View style={styles.headerContainer}>
+            <IconButton
+              icon="grid"
+              color={GlobalStyles.colors.lightGreen}
+              onPress={() => navigation.navigate("TabsScreens")}
+              size={30}
+            />
+          </View>
+        );
+      },
+    });
+  });
 
   return (
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.recipeCard}>
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>{recipe.name}</Text>
+            <Text style={styles.title}>{recipeTitle}</Text>
+            <View style={styles.headerContainer}>
+              <IconButton
+                icon={mealIsFavorite ? "star" : "star-outline"}
+                color={GlobalStyles.colors.lightOrange}
+                onPress={changeFavoriteHandler}
+                size={30}
+              />
+              <IconButton
+                icon={
+                  mealOnShoppingList ? "list-circle" : "list-circle-outline"
+                }
+                color={GlobalStyles.colors.lightOrange}
+                onPress={changeShoppingHandler}
+                size={30}
+              />
+            </View>
             <Text style={[styles.text, styles.minorText]}>
               Duration in {durationQualifier}: {recipe.duration}
             </Text>
@@ -198,5 +258,8 @@ const styles = StyleSheet.create({
   },
   listSpacing: {
     marginVertical: 6,
+  },
+  headerContainer: {
+    flexDirection: "row",
   },
 });
