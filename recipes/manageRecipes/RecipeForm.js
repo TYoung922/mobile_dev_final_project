@@ -37,7 +37,7 @@ function RecipeForm() {
   const [recipeName, setRecipeName] = useState();
 
   //drop down menu
-  const categoryItems = CATEGORIES.slice(1).map((category) => ({
+  const categoryItems = CATEGORIES.slice(1, -1).map((category) => ({
     label: category.title,
     value: category.id,
   }));
@@ -58,22 +58,12 @@ function RecipeForm() {
   const [ingredient, setIngreditent] = useState();
 
   function AddIngredientHandler() {
-    // if (ingredient) {
-    //   setIngredientList((prevIngredients) => [
-    //     ...prevIngredients,
-    //     { id: Math.random().toString(), name: ingredient },
-    //   ]);
-    //   setIngreditent("");
-    // }
     if (ingredient) {
       setIngredientList((prevIngredients) => [...prevIngredients, ingredient]);
       setIngreditent("");
     }
   }
-  //   function deleteIngredientHandler(id) {
-  //     const updatedList = ingredientList.filter((item) => item.id !== id);
-  //     setIngredientList(updatedList);
-  //   }
+
   function deleteIngredientHandler(ingredientToRemove) {
     const updatedList = ingredientList.filter(
       (item) => item !== ingredientToRemove
@@ -85,14 +75,6 @@ function RecipeForm() {
   const [instructionList, setInstructionList] = useState([]);
   const [instruction, setInstruction] = useState();
   function AddStep() {
-    // if (instruction) {
-    //   setInstructionList((prevInstructions) => [
-    //     ...prevInstructions,
-    //     // { id: prevInstructions.length + 1, name: instruction },
-    //     { id: Math.random().toString(), name: instruction },
-    //   ]);
-    //   setInstruction("");
-    // }
     if (instruction) {
       setInstructionList((previnstructions) => [
         ...previnstructions,
@@ -101,10 +83,7 @@ function RecipeForm() {
       setInstruction("");
     }
   }
-  //   function deleteStepHandler(id) {
-  //     const updatedList = instructionList.filter((item) => item.id !== id);
-  //     setInstructionList(updatedList);
-  //   }
+
   function deleteStepHandler(stepToRemove) {
     const updatedList = instructionList.filter((item) => item !== stepToRemove);
     setInstructionList(updatedList);
@@ -180,13 +159,6 @@ function RecipeForm() {
       console.error("Error adding recipe: ", error);
     }
   };
-
-  //   useEffect(() => {
-  //     if (recipeData.name) {
-  //       //do stuff
-  //     }
-
-  //     });
 
   function clearHandler() {
     setGenre(null);
@@ -367,15 +339,20 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
     alignItems: "center",
+    // paddingHorizontal: 15,
+    // marginHorizontal: 20,
   },
   basicInputContainer: {
     justifyContent: "center",
     alignItems: "center",
+    // padding: 25,
   },
   buttonsContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    paddingTop: 15,
+    marginBottom: 15,
   },
   nameContainer: {
     marginBottom: 25,
@@ -403,6 +380,8 @@ const styles = StyleSheet.create({
     color: GlobalStyles.colors.darkOrange,
     marginVertical: 2,
     paddingBottom: 15,
+    // paddingHorizontal: 25,
+    maxWidth: 250,
   },
   list: {
     maxHeight: 150,

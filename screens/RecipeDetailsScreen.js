@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { GlobalStyles } from "../constants/styles";
-import { useContext, useLayoutEffect, useState } from "react";
+import { useCallback, useContext, useLayoutEffect, useState } from "react";
 import { CustomCheckBox } from "../recipes/manageRecipes/UI/CheckBox";
 import IconButton from "../recipes/manageRecipes/UI/IconButton";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,10 +8,32 @@ import { addFavorite, removeFavorite } from "../store/redux/favorites";
 import { addShopping, removeShopping } from "../store/redux/shoping";
 import { storeFavorite, storeShopping } from "../util/http";
 import { AuthContext } from "../store/auth-context";
+import { useFocusEffect } from "@react-navigation/native";
+import { RecipeContext } from "../store/recipe-context";
 
 function RecipeDetailsScreen({ route, navigation }) {
   //Get recipe info
-  const recipe = route.params.item;
+  // let recipe = route.params.item;
+  const [recipe, setRecipeInfo] = useState(route.params.item);
+
+  // const recipeId = recipe.id;
+
+  const recipeCtx = useContext(RecipeContext);
+  // console.log(recipeCtx.recipe[recipe.id]);
+
+  useFocusEffect(
+    useCallback(() => {
+      async function fetchRecipe() {
+        const newRecipe = recipeCtx.recipe.find(
+          (meal) => meal.id === recipe.id
+        );
+        setRecipeInfo(newRecipe);
+        // console.log(newRecipe);
+      }
+      fetchRecipe();
+    })
+  );
+
   let durationQualifier = "minutes";
   if (recipe.isHours) {
     durationQualifier = "hours";
@@ -115,6 +137,12 @@ function RecipeDetailsScreen({ route, navigation }) {
     });
   });
 
+  // console.log(mealId);
+
+  function editHandler() {
+    navigation.navigate("EditRecipe", { item: recipe });
+  }
+
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -134,6 +162,12 @@ function RecipeDetailsScreen({ route, navigation }) {
                 }
                 color={GlobalStyles.colors.lightOrange}
                 onPress={changeShoppingHandler}
+                size={30}
+              />
+              <IconButton
+                icon="create-outline"
+                color={GlobalStyles.colors.lightOrange}
+                onPress={editHandler}
                 size={30}
               />
             </View>
@@ -195,7 +229,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   recipeCard: {
-    marginTop: 25,
+    margin: 25,
     borderRadius: 8,
     backgroundColor: GlobalStyles.colors.darkGreen,
     padding: 30,
@@ -255,6 +289,8 @@ const styles = StyleSheet.create({
     borderColor: GlobalStyles.colors.lightGreen,
     borderWidth: 4,
     padding: 15,
+    paddingHorizontal: 25,
+    maxWidth: 350,
   },
   listSpacing: {
     marginVertical: 6,

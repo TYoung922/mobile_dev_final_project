@@ -18,12 +18,14 @@ function CategoriesScreen({ navigation }) {
   const recipeCtx = useContext(RecipeContext);
 
   useEffect(() => {
+    // console.log("Current Recipes categoriesS: ", recipeCtx.recipe);
     async function getRecipes() {
       // setIsFetching(true)
       try {
         const recipes = await fetchRecipe();
         // console.log("Fetched recipes: ", recipes);
         recipeCtx.setRecipe(recipes);
+        // console.log(fetchRecipe());
       } catch (error) {
         console.error(error);
       }
@@ -31,7 +33,7 @@ function CategoriesScreen({ navigation }) {
     }
 
     getRecipes();
-  }, []);
+  }, [recipeCtx]);
 
   function renderCategories(catData) {
     function pressHandler() {

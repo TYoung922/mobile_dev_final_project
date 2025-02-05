@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 8,
     overflow: Platform.OS === "android" ? "hidden" : "visible",
+    maxWidth: 192,
   },
   button: {
     flex: 1,
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
   title: {
     // fontWeight: "bold",
     fontSize: 30,
-    fontFamily: "lotr",
+    // fontFamily: "lotr",
     // overflow: "hidden",
   },
 });

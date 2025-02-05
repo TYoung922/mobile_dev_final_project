@@ -23,6 +23,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { loadFavorites } from "./store/redux/favorites";
 import { fetchShopping } from "./util/http";
 import { loadShopping, setShopping } from "./store/redux/shoping";
+import EditRecipeScreen from "./screens/EditRecipeScreen";
 // import AppLoading from "expo-app-loading";
 
 const Stack = createNativeStackNavigator();
@@ -139,6 +140,13 @@ function AuthenticatedStack() {
             component={RecipeOverviewScreen}
           />
           <Stack.Screen name="RecipeDetails" component={RecipeDetailsScreen} />
+          <Stack.Screen
+            name="EditRecipe"
+            component={EditRecipeScreen}
+            options={{
+              headerBackVisible: false,
+            }}
+          />
         </Stack.Navigator>
       </RecipeContextProvider>
       {/* </Provider> */}
@@ -204,7 +212,9 @@ export default function App() {
       <StatusBar style="auto" />
       <Provider store={store}>
         <AuthContextProvider>
+          {/* <RecipeContextProvider> */}
           <Root />
+          {/* </RecipeContextProvider> */}
         </AuthContextProvider>
       </Provider>
     </>

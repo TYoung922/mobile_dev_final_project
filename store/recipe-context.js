@@ -22,7 +22,12 @@ export const RecipeContext = createContext({
 function recipeReducer(state, action) {
   switch (action.type) {
     case "ADD":
-      return [action.payload, ...state];
+      // console.log("Recipe added to state: ", action.payload);
+      // console.log("Before adding, current state: ", state);
+      const updatedState = [action.payload, ...state];
+      // console.log("Updated state after adding: ", updatedState);
+      // return [action.payload, ...state];
+      return updatedState;
     case "SET":
       return action.payload.reverse();
     case "UPDATE":
@@ -45,6 +50,7 @@ function RecipeContextProvider({ children }) {
   const [recipeState, dispatch] = useReducer(recipeReducer, []);
 
   function addRecipe(recipeData) {
+    // console.log("Adding Recipe: ", recipeData);
     dispatch({ type: "ADD", payload: recipeData });
   }
 

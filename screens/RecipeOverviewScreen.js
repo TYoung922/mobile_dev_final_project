@@ -13,12 +13,14 @@ function RecipeOverviewScreen({ route, navigation }) {
   const recipies = useContext(RecipeContext);
 
   const catId = route.params.catId;
-  // console.log(recipies.recipe);
+  // console.log("current recipes overview: ", recipies.recipe);
 
   let selectedRecipies = [];
 
   if (catId === "c1") {
     selectedRecipies = recipies.recipe.filter((recipie) => recipie.isQuick);
+  } else if (catId === "c13") {
+    selectedRecipies = recipies.recipe;
   } else {
     selectedRecipies = recipies.recipe.filter(
       (recipie) => recipie.genre === catId
