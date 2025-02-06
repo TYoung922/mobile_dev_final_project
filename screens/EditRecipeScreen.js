@@ -294,8 +294,9 @@ const styles = StyleSheet.create({
   },
   button: {
     // minWidth: 120,
-    maxWidth: 100,
+    // maxWidth: 100,
     marginHorizontal: 25,
+    padding: 5,
     // color: GlobalStyles.colors.darkGreen,
   },
   inputStyle: {

@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { RecipeContext } from "../store/recipe-context";
 import { CATEGORIES, GlobalStyles } from "../constants/styles";
+import Search from "../recipes/manageRecipes/Search";
 
 function RecipeOverviewScreen({ route, navigation }) {
   const recipies = useContext(RecipeContext);
@@ -21,6 +22,13 @@ function RecipeOverviewScreen({ route, navigation }) {
     selectedRecipies = recipies.recipe.filter((recipie) => recipie.isQuick);
   } else if (catId === "c13") {
     selectedRecipies = recipies.recipe;
+  } else if (catId === "c14") {
+    selectedRecipies = recipies.recipe;
+    return (
+      <View style={styles.rootContainer}>
+        <Search />
+      </View>
+    );
   } else {
     selectedRecipies = recipies.recipe.filter(
       (recipie) => recipie.genre === catId

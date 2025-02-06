@@ -37,7 +37,7 @@ function RecipeForm() {
   const [recipeName, setRecipeName] = useState();
 
   //drop down menu
-  const categoryItems = CATEGORIES.slice(1, -1).map((category) => ({
+  const categoryItems = CATEGORIES.slice(1, -2).map((category) => ({
     label: category.title,
     value: category.id,
   }));
@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
   },
   button: {
     // minWidth: 120,
-    maxWidth: 100,
+    // maxWidth: 100,
     marginHorizontal: 25,
     // color: GlobalStyles.colors.darkGreen,
   },

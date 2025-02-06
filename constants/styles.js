@@ -51,6 +51,7 @@ export const CATEGORIES = [
   new Category("c11", "Greek", GlobalStyles.colors.darkOrange),
   new Category("c12", "Dessert", GlobalStyles.colors.darkGreen),
   new Category("c13", "All Recipes", GlobalStyles.colors.darkGreen),
+  new Category("c14", "Search", GlobalStyles.colors.darkOrange),
 ];
 
 export default Category;
